@@ -6,9 +6,8 @@
 
 <div class="container">
   <h1>Database Output</h1>
-  <p th:text="${dbUrl}"></p>
   <ul th:each="record : ${records}">
-    <li th:text="${record}"/>
+    <li th:text="${record.cNameCn}"/>
   </ul>
 </div>
 

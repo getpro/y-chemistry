@@ -18,6 +18,7 @@ package com.example;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.nutz.dao.Dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -25,6 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import win.i02.bean.ElementBean;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,22 +34,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Controller
 @SpringBootApplication
 public class Main {
-  @Value("${spring.datasource.url}")
-  private String dbUrl;
-  @Value("${spring.datasource.username}")
-  private String userName;
-  @Value("${spring.datasource.password}")
-  private String password;
-  @Value("${spring.datasource.driver-class-name}")
-  private String driverClass;
 
   @Autowired
-  private DataSource dataSource;
+  private Dao dao;
 
   public static void main(String[] args) throws Exception {
     SpringApplication.run(Main.class, args);
@@ -60,18 +55,9 @@ public class Main {
 
   @RequestMapping("/db")
   String db(Map<String, Object> model) {
-    System.out.println(dbUrl);
-    try (Connection connection = dataSource.getConnection()) {
-      Statement stmt = connection.createStatement();
-      ResultSet rs = stmt.executeQuery("SELECT * FROM element");
-
-      ArrayList<String> output = new ArrayList<String>();
-      while (rs.next()) {
-        output.add("Read from DB: " + rs.getString("c_name_cn"));
-      }
-
-      model.put("records", output);
-      model.put("dbUrl",dbUrl);
+    try{
+      List<ElementBean> bean = dao.query(ElementBean.class,null);
+      model.put("records", bean);
       return "db";
     } catch (Exception e) {
       model.put("message", e.getMessage());
@@ -79,18 +65,5 @@ public class Main {
     }
   }
 
-  @Bean
-  public DataSource dataSource() throws SQLException {
-    if (dbUrl == null || dbUrl.isEmpty()) {
-      return new HikariDataSource();
-    } else {
-      HikariConfig config = new HikariConfig();
-      config.setJdbcUrl(dbUrl);
-      config.setUsername(userName);
-      config.setPassword(password);
-      config.setDriverClassName(driverClass);
-      return new HikariDataSource(config);
-    }
-  }
 
 }

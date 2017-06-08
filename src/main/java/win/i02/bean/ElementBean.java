@@ -1,5 +1,6 @@
 package win.i02.bean;
 
+import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Table;
@@ -11,6 +12,7 @@ import org.nutz.dao.entity.annotation.Table;
 @Table("element")
 public class ElementBean {
     @Id
+    @ColDefine(auto = true)
     private int id;
     @Column("c_name_cn")
     private String cNameCn;
@@ -37,10 +39,13 @@ public class ElementBean {
     @Column("j_oxidation_state")
     private String jOxidationState;
     @Column("c_find")
+    @ColDefine(customType = "text")
     private String cFind;
     @Column("c_source")
+    @ColDefine(customType = "text")
     private String cSource;
     @Column("c_use")
+    @ColDefine(customType = "text")
     private String cUse;
     @Column("p_status")
     private String pStatus;
@@ -65,6 +70,7 @@ public class ElementBean {
     @Column("p_thermal_conductivity")
     private double pThermalConductivity;
     @Column("c_electronic_model")
+    @ColDefine(customType = "text")
     private String cElectronicModel;
 
 
