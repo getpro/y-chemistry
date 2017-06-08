@@ -33,7 +33,16 @@ public class IndexController {
 
     @RequestMapping("/test")
     public List<ElementBean> test(){
-        Daos.createTablesInPackage(dao,"win.i02.bean",false);
+//        Daos.createTablesInPackage(dao,"win.i02.bean",false);
         return dao.query(ElementBean.class,null);
+    }
+
+    @RequestMapping("/add")
+    public String add(){
+        ElementBean bean = new ElementBean();
+        bean.setcNameCn("测试");
+        bean.setcNameEn("test");
+        dao.insert(bean);
+        return "ok";
     }
 }
