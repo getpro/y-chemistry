@@ -56,9 +56,4 @@ public class IndexController {
         }
         return "fail";
     }
-
-    @RequestMapping("/cn")
-    public String cn(){
-        return "中文";
-    }
 }
