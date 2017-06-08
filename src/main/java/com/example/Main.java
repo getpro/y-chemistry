@@ -37,9 +37,14 @@ import java.util.Map;
 @Controller
 @SpringBootApplication
 public class Main {
-
   @Value("${spring.datasource.url}")
   private String dbUrl;
+  @Value("${spring.datasource.username}")
+  private String userName;
+  @Value("${spring.datasource.password}")
+  private String password;
+  @Value("${spring.datasource.driver-class-name}")
+  private String driverClass;
 
   @Autowired
   private DataSource dataSource;
@@ -55,18 +60,18 @@ public class Main {
 
   @RequestMapping("/db")
   String db(Map<String, Object> model) {
+    System.out.println(dbUrl);
     try (Connection connection = dataSource.getConnection()) {
       Statement stmt = connection.createStatement();
-      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-      stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
-      ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
+      ResultSet rs = stmt.executeQuery("SELECT * FROM element");
 
       ArrayList<String> output = new ArrayList<String>();
       while (rs.next()) {
-        output.add("Read from DB: " + rs.getTimestamp("tick"));
+        output.add("Read from DB: " + rs.getString("c_name_cn"));
       }
 
       model.put("records", output);
+      model.put("dbUrl",dbUrl);
       return "db";
     } catch (Exception e) {
       model.put("message", e.getMessage());
@@ -81,6 +86,9 @@ public class Main {
     } else {
       HikariConfig config = new HikariConfig();
       config.setJdbcUrl(dbUrl);
+      config.setUsername(userName);
+      config.setPassword(password);
+      config.setDriverClassName(driverClass);
       return new HikariDataSource(config);
     }
   }
