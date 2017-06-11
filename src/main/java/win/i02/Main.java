@@ -32,4 +32,9 @@ public class Main {
   String index(){
     return "index";
   }
+
+  @RequestMapping("/403")
+  String notFound(){
+    return "page_403";
+  }
 }
