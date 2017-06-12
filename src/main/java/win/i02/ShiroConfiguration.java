@@ -34,6 +34,7 @@ public class ShiroConfiguration {
         return shiroRealm;
     }
 
+    @Bean
     public FilterRegistrationBean filterRegistrationBean() {
         FilterRegistrationBean filterRegistration = new FilterRegistrationBean();
         filterRegistration.setFilter(new DelegatingFilterProxy("shiroFilter"));
@@ -85,9 +86,10 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/m/*", "authc");// 这里为了测试，只限制/user，实际开发中请修改为具体拦截的请求规则
         // anon：它对应的过滤器里面是空的,什么都没做
 //        logger.info("##################从数据库读取权限规则，加载到shiroFilter中##################");
-        filterChainDefinitionMap.put("/m/edit/**", "authc,perms[管理员:编辑]");// 这里为了测试，固定写死的值，也可以从数据库或其他配置中读取
+        filterChainDefinitionMap.put("/m/edit/**", "authc,perms[管理员:*]");// ,perms[管理员:编辑]这里为了测试，固定写死的值，也可以从数据库或其他配置中读取
 
         filterChainDefinitionMap.put("/m/login", "anon");
+        filterChainDefinitionMap.put("/m", "anon");
         filterChainDefinitionMap.put("/m/", "anon");
         filterChainDefinitionMap.put("/m/index", "anon");
 
@@ -112,7 +114,7 @@ public class ShiroConfiguration {
         // 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
         shiroFilterFactoryBean.setLoginUrl("/m/login");
         // 登录成功后要跳转的连接
-        shiroFilterFactoryBean.setSuccessUrl("/m/edit/");
+        shiroFilterFactoryBean.setSuccessUrl("/m/edit");
         shiroFilterFactoryBean.setUnauthorizedUrl("/403");
 
         loadShiroFilterChain(shiroFilterFactoryBean);

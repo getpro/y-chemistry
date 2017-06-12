@@ -39,9 +39,10 @@ public class MyShiroRealm extends AuthorizingRealm {
             List<String> permissonNames = new ArrayList<>();
             for (RoleBean roleBean : userBean.getRoles()) {
                 roleNames.add(roleBean.getRoleName());
+                permissonNames.add(roleBean.getRoleName()+":*");
                 for (PermissionBean permissionBean : roleBean.getPermissions()) {
                     if (!permissonNames.contains(permissionBean.getPermissionName())) {
-                        permissonNames.add(permissionBean.getPermissionName());
+                        permissonNames.add(roleBean.getRoleName()+":"+permissionBean.getPermissionName());
                     }
                 }
             }

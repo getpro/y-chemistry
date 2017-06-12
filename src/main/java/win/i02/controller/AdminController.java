@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import win.i02.bean.UserBean;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -26,12 +29,12 @@ public class AdminController {
     @Autowired
     private Dao dao;
 
-    @RequestMapping(value = {"/","/login","/index"},method = RequestMethod.GET)
+    @RequestMapping(value = {"","/login","/index"},method = RequestMethod.GET)
     public String index(){
         return "admin/login";
     }
 
-    @RequestMapping("/edit/")
+    @RequestMapping("/edit")
     public String edit(Model model){
         List<UserBean> beans = dao.query(UserBean.class,null);
         model.addAttribute("records",beans);
@@ -39,8 +42,12 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/login",method = RequestMethod.POST)
-    public String login(Model model,@RequestParam String userName,@RequestParam String password){
-        UsernamePasswordToken token = new UsernamePasswordToken(userName,password);
+    public String login(@RequestParam String userName,@RequestParam String password, RedirectAttributes redirectAttributes){
+//        if(bindingResult.hasErrors()){
+//            redirectAttributes.addFlashAttribute("error","用户名或密码不能为空");
+//            return "redirect:/m";
+//        }
+        UsernamePasswordToken token = new UsernamePasswordToken(userName,password,true,"");
         Subject currentUser = SecurityUtils.getSubject();
 
         try {
@@ -52,29 +59,31 @@ public class AdminController {
             System.out.println("对用户[" + userName + "]进行登录验证..验证通过");
         }catch(UnknownAccountException uae){
             System.out.println("对用户[" + userName + "]进行登录验证..验证未通过,未知账户");
-            model.addAttribute("error", "未知账户");
+            redirectAttributes.addFlashAttribute("error", "未知账户");
         }catch(IncorrectCredentialsException ice){
             System.out.println("对用户[" + userName + "]进行登录验证..验证未通过,错误的凭证");
-            model.addAttribute("error", "密码不正确");
+            redirectAttributes.addFlashAttribute("error", "密码不正确");
         }catch(LockedAccountException lae){
             System.out.println("对用户[" + userName + "]进行登录验证..验证未通过,账户已锁定");
-            model.addAttribute("error", "账户已锁定");
+            redirectAttributes.addFlashAttribute("error", "账户已锁定");
         }catch(ExcessiveAttemptsException eae){
             System.out.println("对用户[" + userName + "]进行登录验证..验证未通过,错误次数过多");
-            model.addAttribute("error", "用户名或密码错误次数过多");
+            redirectAttributes.addFlashAttribute("error", "用户名或密码错误次数过多");
         }catch(AuthenticationException ae){
             //通过处理Shiro的运行时AuthenticationException就可以控制用户登录失败或密码错误时的情景  
             System.out.println("对用户[" + userName + "]进行登录验证..验证未通过,堆栈轨迹如下");
             ae.printStackTrace();
-            model.addAttribute("error", "用户名或密码不正确");
+            redirectAttributes.addFlashAttribute("error", "用户名或密码不正确");
         }
         //验证是否登录成功  
         if(currentUser.isAuthenticated()){
+            token.setRememberMe(true);
+            System.out.println("session:"+currentUser.getSession().getId().toString());
             System.out.println("用户[" + userName + "]登录认证通过(这里可以进行一些认证通过后的一些系统参数初始化操作)");
             return "redirect:/m/edit/";
         }else{
             token.clear();
-            return "admin/login";
+            return "redirect:/m";
         }
     }
 }
