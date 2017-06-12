@@ -1,5 +1,6 @@
 package win.i02.controller;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.util.Daos;
@@ -29,10 +30,12 @@ public class IndexController {
     @Autowired
     Dao dao;
 
+    @Autowired
+    DruidDataSource druidDataSource;
+
     @RequestMapping("/test")
-    public List<ElementBean> test(){
-//        Daos.createTablesInPackage(dao,"win.i02.bean",false);
-        return dao.query(ElementBean.class,null);
+    public BaseResultBean test(){
+        return new BaseResultBean(druidDataSource.getUrl());
     }
 
     @RequestMapping("/addrole")
