@@ -4,11 +4,13 @@ import com.alibaba.druid.pool.DruidDataSource;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.util.Daos;
+import org.nutz.mvc.annotation.ReqHeader;
 import org.nutz.plugin.spring.boot.config.SqlManagerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import win.i02.bean.*;
@@ -34,8 +36,8 @@ public class IndexController {
     DruidDataSource druidDataSource;
 
     @RequestMapping("/test")
-    public BaseResultBean test(){
-        return new BaseResultBean(druidDataSource.getUrl());
+    public BaseResultBean test(@RequestHeader("Host") String host){
+        return new BaseResultBean(host);
     }
 
     @RequestMapping("/addrole")

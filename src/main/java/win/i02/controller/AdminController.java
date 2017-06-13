@@ -4,15 +4,18 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.nutz.dao.Dao;
+import org.nutz.mvc.annotation.ReqHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContext;
 import win.i02.bean.UserBean;
 
 import javax.validation.Valid;
@@ -42,12 +45,13 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/login",method = RequestMethod.POST)
-    public String login(@RequestParam String userName,@RequestParam String password, RedirectAttributes redirectAttributes){
+    public String login(@RequestParam String userName, @RequestParam String password, RedirectAttributes redirectAttributes){
 //        if(bindingResult.hasErrors()){
 //            redirectAttributes.addFlashAttribute("error","用户名或密码不能为空");
 //            return "redirect:/m";
 //        }
-        UsernamePasswordToken token = new UsernamePasswordToken(userName,password,true,"");
+        UsernamePasswordToken token = new UsernamePasswordToken(userName,password);
+        token.setRememberMe(true);
         Subject currentUser = SecurityUtils.getSubject();
 
         try {
