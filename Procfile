@@ -1,0 +1,1 @@
+web: java -jar target/YChemistry-1.0.1.jar
